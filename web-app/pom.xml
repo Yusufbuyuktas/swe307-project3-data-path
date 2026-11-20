@@ -13,11 +13,17 @@
     <artifactId>web-app</artifactId>
     <packaging>jar</packaging>
 
-    <!-- Note (Task B2-02): B2 will verify Janino and SLF4J/logging alignment between Spring Boot and Spark -->
+    <!-- Note (Task B2-02): B2 will verify Janino runtime compatibility when SparkSession executes queries -->
     <dependencies>
         <dependency>
             <groupId>edu.swe307</groupId>
             <artifactId>spark-query</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
