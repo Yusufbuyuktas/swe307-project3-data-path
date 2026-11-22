@@ -1,47 +1,23 @@
 # Veri Sözleşmeleri ve Sistem Arayüzleri (Owner: A3)
 
-> **Durum:** Taslak v0.1 — **Task 6.3 (`[BLOCKED]`)**: Hocanın POS simülatör sunucusu henüz paylaşılmadığı için simülatöre bağlı format kararları kilitli değildir.
+## 1. POS CSV Formatı (6 Kolon — Kesinleşti)
+`<user_id, date_time, description, type, count, payment>`
+* `user_id` (`int`): `bigdata.emp.empno` (örn. `7788`)
+* `date_time` (`text`): İşlem zaman damgası (örn. `2026-11-22 14:10:00`)
+* `description` (`text`): Harcama açıklaması
+* `type` (`text`): Harcama türü/kategorisi (örn. `Hardware`, `Travel`, `Food`)
+* `count` (`int`): Adet bilgisi
+* `payment` (`decimal`): Kredi kartından çekilen işlem tutarı (virgülden sonra 2 basamak). `totalExpense(empno)` doğrudan `SUM(payment)` hesaplar.
 
-## 1. Kafka Sözleşmesi
-* **Topic Adları:** `accounting`, `research`, `sales`, `operations` (`ProjectConstants`)
-* **Partition Sayısı:** Varsayılan `1` veya `3` *(A1 tarafından sabitlenecek)*.
-* **Mesaj Biçimi (Value):** UTF-8 düz metin (CSV satırı).
-* **Mesaj Anahtarı (Key):** `[BELİRSİZ — PENDING]`
+## 2. Kafka Topic Yönlendirmesi
+* Topic'ler: `accounting`, `research`, `sales`, `operations`
+* Kayıtlar çalışanın departmanına göre ilgili topic'e yönlendirilir (`7788` SCOTT → `research`).
+* Hocanın simülatörü doğrudan departman topic'ine yazmazsa producer/bridge katmanında `TopicRouter` ile `empno -> dname` eşlemesi yapılacaktır.
 
-## 2. POS CSV Alan Sırası ve Veri Tipleri (Taslak)
-| Sıra | Alan | Örnek | Hedef Tip | Not |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | `user_id` (`empno`) | `7788` | `INT` | `bigdata.emp.empno` ile eşleşir |
-| 2 | `date_time` | `2026-11-21 14:30:00` | `TEXT` | **[BELİRSİZ — PENDING]** Gerçek format simülatörden alınacak |
-| 3 | `description` | `Flight Ticket` | `TEXT` | Harcama açıklaması |
-| 4 | `amount` | `450.50` | `DECIMAL` | Parasal tutar |
+## 3. Cassandra Şeması (`infra/cassandra/init.cql`)
+* Keyspace: `pos` | Tablo: `expenses`
+* Kolonlar: `user_id int`, `date_time text`, `description text`, `type text`, `count int`, `payment decimal`
+* Anahtar: `PRIMARY KEY ((user_id), date_time, description)` (Simülatör saniyede 1 kayıt ürettiği için saniye + açıklama bazında tekildir).
 
-## 3. MySQL Şema Sözleşmesi (`bigdata`)
-* **Veritabanı:** `bigdata` (Referans sürüm: `8.0.46-0ubuntu0.22.04.5`, Sorumlu: **B1**)
-* **`bigdata.dept`:** `deptno` (PK), `dname` (`ACCOUNTING`, `RESEARCH`, `SALES`, `OPERATIONS`), `loc`
-* **`bigdata.emp`:** `empno` (PK), `ename`, `job`, `mgr` (FK → `emp.empno`, nullable), `hiredate`, `sal`, `comm` (nullable), `deptno` (FK → `dept.deptno`)
-
-## 4. Cassandra Şema Sözleşmesi (`pos.expenses` — Taslak)
-* **Keyspace:** `pos` (`SimpleStrategy`, `replication_factor = 1`) | **Tablo:** `expenses` (Sorumlu: **A2**, Onay: **A3**)
-* **Şema Dosyası:** `infra/cassandra/init.cql`
-* **Taslak Anahtar:** `PRIMARY KEY ((user_id), date_time, description)`
-* **Not (`[BELİRSİZ — PENDING]`):** Aynı saniye ve açıklamayla gelen iki harcamanın üzerine yazılma riski ve Spark yeniden başlatmalarında idempotency konusu Task 6.3 çözüldüğünde A2 ile kesinleştirilecektir.
-
-## 5. HDFS ve Java Ortak Sözleşmeleri
-* **HDFS Fotoğraf Yolu:** `/photos/{filename}` (`ProjectConstants.HDFS_PHOTOS_DIR`, Sorumlu: **B2**). Eksik görselde 500 yerine placeholder döner.
-* **`ExpenseQueryService` (A2):** `BigDecimal totalExpense(int empno)` — Kayıt yoksa `BigDecimal.ZERO` (`0`) döner.
-* **`PhotoService` (B2):** `byte[] getPhoto(String fileName)`
-* **`EmployeeRow` (A3):** `imageFile`, `ename`, `mgrName`, `salary`, `commission`, `department`, `totalExpense`.
-
-## 6. Null Değerler ve Hata Davranışları
-* **Yöneticisi olmayan (`KING`):** `mgr` `NULL` ise `-` veya `NULL` gösterilir, NPE oluşmaz.
-* **Komisyonu olmayan / 0 olan (`TURNER` = 0, `SCOTT` = NULL):** `0` değeri korunur, `NULL` hatasız işlenir.
-* **Harcaması olmayan çalışan:** `totalExpense` alanı `0` (`0.00`) gösterilir.
-* **Olmayan personel araması:** Kullanıcı dostu mesaj döner, stack trace gösterilmez.
-
-## 7. Açık / Kesinleşmemiş Maddeler (Task 6.2 & Task 6.3 [BLOCKED])
-- [ ] **[BLOCKED — POS Simülatörü Bekleniyor]** POS tarih formatı
-- [ ] **[BLOCKED — POS Simülatörü Bekleniyor]** POS'un Kafka'ya nasıl bağlandığı
-- [ ] **[BLOCKED — POS Simülatörü Bekleniyor]** Topic yönlendirmesini simülatörün yapıp yapmadığı
-- [ ] **[PENDING]** Kafka mesaj key'i
-- [ ] **[PENDING — A2 & A3]** Cassandra'da tekrar kayıtların nasıl önleneceği (Primary Key tasarımı)
+## 4. Açık Kalan Tek Madde (`[BLOCKED]`)
+* Hocanın paylaşacağı starter GitHub reposu (POS simülatör sunucusu + çalışan fotoğrafları + örnek CSV).

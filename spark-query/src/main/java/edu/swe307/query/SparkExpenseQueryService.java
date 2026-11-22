@@ -34,7 +34,7 @@ public class SparkExpenseQueryService implements ExpenseQueryService {
 
         Row result = expenses
             .filter(col(CassandraNames.COL_USER_ID).equalTo(empno))
-            .agg(sum(col(CassandraNames.COL_AMOUNT)))
+            .agg(sum(col(CassandraNames.COL_PAYMENT)))
             .first();
 
         if (result == null || result.isNullAt(0)) {
