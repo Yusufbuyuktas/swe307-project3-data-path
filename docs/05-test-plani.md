@@ -10,3 +10,8 @@
 - **TC-05 (KING — Null Yönetici):** `mgr = NULL` iken `NullPointerException` oluşmadan sayfa açılıyor mu?
 - **TC-06 (TURNER — Sıfır Komisyon):** `comm = 0` değeri `0` olarak korunuyor mu?
 - **TC-07 (HDFS Fotoğraf):** `/photos/{ename}.jpg` yükleniyor mu; eksik dosyada 500 yerine varsayılan görsel dönüyor mu?
+
+## 2. Web ve Sınır Durum Testleri (Grup B + E2E)
+- **TC-05 (KING — Null Yönetici):** `mgr = NULL` iken `NullPointerException` oluşmadan sayfa açılıyor mu?
+- **TC-06 (TURNER — Sıfır Komisyon):** `comm = 0` değeri `0` olarak korunuyor mu?
+- **TC-07 (HDFS Fotoğraf):** `/photos/{ename}.jpg` yükleniyor mu; eksik dosyada 500 yerine varsayılan görsel dönüyor mu?
