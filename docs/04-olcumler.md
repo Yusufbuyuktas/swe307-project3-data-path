@@ -1,4 +1,3 @@
-cat > docs/04-olcumler.md <<'EOF'
 # A2 — `spark-query` Sorgu Doğrulama ve Süre Ölçümleri
 
 ## Test Ortamı ve Veri Özeti (22 Kasım 2026)
@@ -19,4 +18,3 @@ cat > docs/04-olcumler.md <<'EOF'
 | Kayıtsız | 9999 | 0.00 | 164 | Hata fırlatmadan `0.00` döndü |
 
 - **2.–6. çağrı ortalaması:** 199.4 ms
-  EOF
