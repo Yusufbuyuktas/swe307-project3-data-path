@@ -8,5 +8,7 @@ public final class CassandraNames {
     public static final String COL_USER_ID = ProjectConstants.COL_USER_ID;
     public static final String COL_DATE_TIME = ProjectConstants.COL_DATE_TIME;
     public static final String COL_DESCRIPTION = ProjectConstants.COL_DESCRIPTION;
-    public static final String COL_AMOUNT = ProjectConstants.COL_AMOUNT;
+    public static final String COL_TYPE = ProjectConstants.COL_TYPE;
+    public static final String COL_COUNT = ProjectConstants.COL_COUNT;
+    public static final String COL_PAYMENT = ProjectConstants.COL_PAYMENT;
 }
