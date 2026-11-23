@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personel Raporu | SWE307</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="container">
+    <header class="page-header">
+        <div class="eyebrow">SWE307 · BIG DATA PROJECT 3</div>
+        <h1>Personel Raporu</h1>
+        <p>Personel detayları ve harcama bilgileri</p>
+    </header>
+
+    <section class="panel">
+        <form th:action="@{/employee}" method="get" class="search-form">
+            <label for="name">Personel adı</label>
+            <div class="search-row">
+                <input id="name"
+                       type="text"
+                       name="name"
+                       th:value="${searchName}"
+                       placeholder="Personel adı girin">
+                <button type="submit">Sorgula</button>
+            </div>
+        </form>
+
+        <div th:if="${error != null}" class="alert error"
+             th:text="${error}">
+            Kayıt bulunamadı
+        </div>
+
+        <div th:if="${employee != null}">
+            <h2 class="result-heading">Sorgu Sonucu</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Fotoğraf</th>
+                        <th>Ad</th>
+                        <th>Yönetici</th>
+                        <th>Maaş</th>
+                        <th>Komisyon</th>
+                        <th>Departman</th>
+                        <th>Toplam Harcama</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <img class="employee-photo"
+                                 th:src="@{/photos/{file}(file=${employee.imageFile})}"
+                                 onerror="this.onerror=null;this.src='/images/placeholder.svg';"
+                                 alt="Personel fotoğrafı">
+                        </td>
+                        <td class="employee-name"
+                            th:text="${employee.ename}">SCOTT</td>
+                        <td th:text="${employee.mgrName != null ? employee.mgrName : '-'}">
+                            JONES
+                        </td>
+                        <td th:text="${employee.salary}">3000.00</td>
+                        <td th:text="${employee.commission != null ? employee.commission : '-'}">
+                            -
+                        </td>
+                        <td th:text="${employee.department}">RESEARCH</td>
+                        <td class="expense-cell">
+                            <span th:if="${employee.totalExpense != null}"
+                                  th:text="${#numbers.formatDecimal(employee.totalExpense, 1, 2)}">
+                                1234.56
+                            </span>
+                            <span th:if="${employee.totalExpense == null}">-</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${expenseError != null}"
+                 class="alert warning"
+                 th:text="${expenseError}">
+                Toplam harcama alınamadı
+            </div>
+        </div>
+
+        <a class="back-link" th:href="@{/}">← Arama sayfasına dön</a>
+    </section>
+</main>
+</body>
+</html>
