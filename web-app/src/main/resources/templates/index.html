@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personel Sorgulama | SWE307</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="container">
+    <header class="page-header">
+        <div class="eyebrow">SWE307 · BIG DATA PROJECT 3</div>
+        <h1>Personel Sorgulama</h1>
+        <p>Personel bilgilerini ve toplam harcamalarını görüntüleyin.</p>
+    </header>
+
+    <section class="panel">
+        <h2>Personel Ara</h2>
+        <form th:action="@{/employee}" method="get" class="search-form">
+            <label for="name">Personel adı</label>
+            <div class="search-row">
+                <input id="name"
+                       type="text"
+                       name="name"
+                       placeholder="Örneğin: SCOTT"
+                       autocomplete="off">
+                <button type="submit">Sorgula</button>
+            </div>
+        </form>
+        <p class="hint">Örnek personeller: SCOTT, KING, TURNER</p>
+    </section>
+</main>
+</body>
+</html>
